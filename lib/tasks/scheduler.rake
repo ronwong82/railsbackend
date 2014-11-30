@@ -11,24 +11,30 @@ namespace :foods do
     foods_to_remove = remove_duplicate_ip_of_same_barcode(daily_foods, ip_frequencies)
     daily_foods = daily_foods - foods_to_remove
 
-    mergeable_foods = Food.where(is_mergeable: true)
-    foods = daily_foods + mergeable_foods
-    puts "There are #{foods.count} foods to process"
+    if daily_foods.count == 0
+      puts "Found no food to process, terminated"
+    else
+      mergeable_foods = Food.where("id < ?", start_id).where(is_mergeable: true)
+      foods = daily_foods + mergeable_foods.except(:id)
+      puts "There are #{foods.count} foods to process"
 
-    frequencies = build_frequency_map(foods, 'barcode')
+      frequencies = build_frequency_map(foods, 'barcode')
 
-    unique_foods = filter_foods(frequencies, foods) {|k,v| v == 1}
-    unique_foods = unique_foods.flatten
-    pickable_foods = filter_foods(frequencies, foods) {|k,v| v == 2}
-    pickable_foods = pick_foods_has_same_barcode( pickable_foods )
-    mergeable_foods = filter_foods(frequencies, foods) {|k,v| v > 2}
-    merged_foods = merge_foods(mergeable_foods)
+      unique_foods = filter_foods(frequencies, foods) {|k,v| v == 1}
+      unique_foods = unique_foods.flatten
+      pickable_foods = filter_foods(frequencies, foods) {|k,v| v == 2}
+      pickable_foods = pick_foods_has_same_barcode( pickable_foods )
+      mergeable_foods = filter_foods(frequencies, foods) {|k,v| v > 2}
+      merged_foods = merge_foods(mergeable_foods)
 
-    push_to_analyzed_table( unique_foods + pickable_foods + merged_foods )
-
-    end_id = daily_foods.present? ? daily_foods.select{|f| f.id.present?}.max_by(&:id).id : start_id
-    sign_off(start_id, end_id, started_at) if start_id && end_id && started_at
-    puts "Finished analyzing foods"
+      # p "unique_foods: #{unique_foods}"
+      # p "pickable_foods: #{pickable_foods}"
+      # p "mergeable_foods #{merged_foods}"
+      push_to_analyzed_table( unique_foods + pickable_foods + merged_foods )
+      end_id = daily_foods.present? ? daily_foods.select{|f| f.id.present?}.max_by(&:id).id : start_id
+      sign_off(start_id, end_id, started_at) if start_id && end_id && started_at
+      puts "Finished analyzing foods"
+    end
   end
 
   def remove_duplicate_ip_of_same_barcode(foods, frequencies)
@@ -42,7 +48,7 @@ namespace :foods do
       end
     end
 
-    foods_to_remove
+    foods_to_remove.flatten
   end
 
   def build_frequency_map(foods, field)
@@ -77,7 +83,7 @@ namespace :foods do
     grouped_foods = group_by_barcode(foods)
     grouped_foods.map do |barcode, food_array|
       pick_is_edited_or_most_columns_or_most_recent_food( food_array )
-    end
+    end.flatten
   end
 
   def group_by_barcode(foods)
@@ -114,10 +120,12 @@ namespace :foods do
     most_recent_object = object_array.select{|o| o.created_at.present?}.max_by(&:created_at)
 
     object_array.each do |o|
-      if frequencies.has_key? o[field_name]
-        frequencies[ o[field_name] ] += 1
-      elsif o[field_name].present?
-        frequencies[ o[field_name] ] = 1
+      if o[field_name].present? # ignore nil value
+        if frequencies.has_key?(o[field_name])
+          frequencies[ o[field_name] ] += 1
+        elsif o[field_name].present?
+          frequencies[ o[field_name] ] = 1
+        end
       end
     end
 
@@ -126,9 +134,15 @@ namespace :foods do
     if max_times
       most_value = frequencies.select{|k,v| v == max_times}.keys.first
     else
-      most_value = most_recent_object[field_name]
+      most_recent_object = object_array.select{|o| o[field_name].present?}.max_by(&:created_at)
+      if most_recent_object.present?
+        most_value = most_recent_object[field_name]
+      else
+        most_value = nil
+      end
     end
 
+    most_value
   end
 
   def sign_off(start_id, end_id, started_at)
@@ -139,6 +153,8 @@ namespace :foods do
 
   def push_to_analyzed_table(foods)
     ActiveRecord::Base.transaction do
+      updated_count = 0
+      created_count = 0
       foods.each do |f|
         analyzed_food = AnalyzedFood.where("barcode = ?", f.barcode).first
         
@@ -146,19 +162,20 @@ namespace :foods do
           if analyzed_food.is_mergeable
             # just replace with merged result
             analyzed_food.update f.attributes.except('created_at', 'updated_at')
+            updated_count += 1
           else
             selected_food = pick_is_edited_or_most_columns_or_most_recent_food([analyzed_food, f])
             if selected_food != analyzed_food
               analyzed_food.update selected_food.attributes
+              updated_count += 1
             end
           end
         else
-          f.id = nil
-          f.created_at = nil
-          f.updated_at = nil
-          AnalyzedFood.create f.attributes
+          res = AnalyzedFood.create f.attributes.except(:id, :created_at, :updated_at)
+          created_count += 1
         end
       end
+      puts "Created #{created_count} foods, Updated #{updated_count} foods"
     end
   end
 
