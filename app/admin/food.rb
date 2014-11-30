@@ -51,7 +51,7 @@ ActiveAdmin.register Food do
     column :caffeine
     column :serving_size
     column :serving_size_type
-    column :serving_unit
+    column :serving_string
     column :location
     column :total_carbohydrates
     column :updated_at

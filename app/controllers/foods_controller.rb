@@ -7,7 +7,7 @@ class FoodsController < ApplicationController
       :trans_fat, :polyunsaturated_fat, :omega_6, :omega_3, :protein, :monounsaturated_fat, :cholesteral,
       :sodium, :potassium, :total_carbohydrates, :dietary_fiber, :sugars, :vitamin_a, :vitamin_b,
       :calcium, :iron, :caffeine, :serving_size, :serving_size_type, :location, :user_ip, :user_email,
-      :is_edited
+      :is_edited, :serving_string
     )
 
     if food.save

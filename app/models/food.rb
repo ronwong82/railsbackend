@@ -8,6 +8,12 @@ class Food < ActiveRecord::Base
   validates :brand, length: { maximum: 100 }
   validates :location, length: { maximum: 50 }
 
+  before_create :assign_serving_string
+
+  def assign_serving_string
+    self.serving_string = "#{self.serving_size} #{serving_unit_string(self.serving_size_type)}" if self.serving_size && self.serving_size_type
+  end
+
   def self.search(query=nil, range=nil)
     range_start, range_end = parse_range range
     foods = nil

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141129020602) do
+ActiveRecord::Schema.define(version: 20141130232041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(version: 20141129020602) do
     t.boolean  "is_mergeable",        default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "serving_string"
   end
 
   create_table "foods", force: true do |t|
@@ -125,6 +126,7 @@ ActiveRecord::Schema.define(version: 20141129020602) do
     t.datetime "updated_at"
     t.boolean  "is_edited"
     t.boolean  "is_mergeable",        default: false
+    t.string   "serving_string"
   end
 
   create_table "logs", force: true do |t|
