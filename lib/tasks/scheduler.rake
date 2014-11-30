@@ -26,7 +26,7 @@ namespace :foods do
 
     push_to_analyzed_table( unique_foods + pickable_foods + merged_foods )
 
-    end_id = daily_foods.present? ? daily_foods.reject{|f| f.id.present?}.max_by(&:id) : start_id
+    end_id = daily_foods.present? ? daily_foods.reject{|f| f.id.present?}.max_by(&:id).id : start_id
     sign_off(start_id, end_id, started_at) if start_id && end_id && started_at
     puts "Finished analyzing foods"
   end
