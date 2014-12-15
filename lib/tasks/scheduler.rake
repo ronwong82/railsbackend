@@ -120,11 +120,13 @@ namespace :foods do
     most_recent_object = object_array.select{|o| o.created_at.present?}.max_by(&:created_at)
 
     object_array.each do |o|
-      if o[field_name].present? # ignore nil value
-        if frequencies.has_key?(o[field_name])
-          frequencies[ o[field_name] ] += 1
-        elsif o[field_name].present?
-          frequencies[ o[field_name] ] = 1
+      key_value = o[field_name]
+
+      if key_value.present? # ignore nil value
+        if frequencies.has_key?(key_value)
+          frequencies[ key_value ] += 1
+        else
+          frequencies[ key_value ] = 1
         end
       end
     end
