@@ -16,7 +16,7 @@ class AnalyzedFood < ActiveRecord::Base
       search_length = query.split.length
       sqls = []
       ['name', 'description'].each { |col| 
-        search_length.times.each { sqls << "#{col} LIKE ?" }
+        search_length.times.each { sqls << "#{col} ILIKE ?" }
       }
       keywords = query.split
       like_keywords = keywords.map{|keyword| "%#{keyword}%"}
