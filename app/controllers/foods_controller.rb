@@ -4,7 +4,7 @@ class FoodsController < ApplicationController
   def create
     food = Food.new params.permit(
       :name, :description, :category, :food_group, :barcode, :barcode_type, :brand, :calories, :calories_from_fat, :total_fat, :saturated_fat,
-      :trans_fat, :polyunsaturated_fat, :omega_6, :omega_3, :protein, :monounsaturated_fat, :cholesteral,
+      :trans_fat, :polyunsaturated_fat, :omega_6, :omega_3, :protein, :monounsaturated_fat, :cholesterol,
       :sodium, :potassium, :total_carbohydrates, :dietary_fiber, :sugars, :vitamin_a, :vitamin_b12, :vitamin_c,
       :calcium, :iron, :caffeine, :serving_size, :serving_size_type, :location, :user_ip, :user_email,
       :is_edited, :serving_string
