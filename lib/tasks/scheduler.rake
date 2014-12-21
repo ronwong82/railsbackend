@@ -165,17 +165,17 @@ namespace :foods do
         analyzed_food = AnalyzedFood.where("barcode = ?", f.barcode).first
         
         if analyzed_food.present?
-          if analyzed_food.is_mergeable
+          # if analyzed_food.is_mergeable
             # just replace with merged result
-            analyzed_food.update f.attributes.except('created_at', 'updated_at')
-            updated_count += 1
-          else
-            selected_food = pick_is_edited_or_most_columns_or_most_recent_food([analyzed_food, f])
-            if selected_food != analyzed_food
-              analyzed_food.update selected_food.attributes
-              updated_count += 1
-            end
-          end
+          analyzed_food.update f.attributes.except('created_at', 'updated_at')
+          updated_count += 1
+          # else
+          #   selected_food = pick_is_edited_or_most_columns_or_most_recent_food([analyzed_food, f])
+          #   if selected_food != analyzed_food
+          #     analyzed_food.update selected_food.attributes
+          #     updated_count += 1
+          #   end
+          # end
         else
           res = AnalyzedFood.create f.attributes.except(:id, :created_at, :updated_at)
           created_count += 1
