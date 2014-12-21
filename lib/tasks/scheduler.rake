@@ -1,12 +1,15 @@
 namespace :foods do
   desc 'Analyze raw foods and generate analyzed foods'
-  task :analyze => :environment do
-    puts "Analyzing foods..."
+  task :analyze, [:row_limit] => :environment do |t, args|
+    args.with_defaults(row_limit: 10000)
+    row_limit = args.row_limit.to_i
+    puts "Analyzing foods with row limit #{row_limit}..."
     started_at = Time.now
 
     log = Log.last
-    start_id = log ? log.end_id : 0
-    daily_foods = Food.where("id > ?", start_id)
+    # daily_foods = Food.where("id > ?", start_id)
+    daily_foods = Food.last(row_limit)
+    start_id = if daily_foods.first then daily_foods.first.id else 0 end
     ip_frequencies = build_frequency_map(daily_foods, 'user_ip')
     foods_to_remove = remove_duplicate_ip_of_same_barcode(daily_foods, ip_frequencies)
     daily_foods = daily_foods - foods_to_remove
@@ -14,8 +17,9 @@ namespace :foods do
     if daily_foods.count == 0
       puts "Found no food to process, terminated"
     else
-      mergeable_foods = Food.where("id < ?", start_id).where(is_mergeable: true)
-      foods = daily_foods + mergeable_foods.except(:id)
+      # mergeable_foods = Food.where("id < ?", start_id).where(is_mergeable: true)
+      # foods = daily_foods + mergeable_foods.except(:id)
+      foods = daily_foods
       puts "There are #{foods.count} foods to process"
 
       frequencies = build_frequency_map(foods, 'barcode')

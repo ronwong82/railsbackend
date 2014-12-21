@@ -22,47 +22,176 @@ ActiveAdmin.register Food do
   index do
     selectable_column
     id_column
-    column :is_edited
     column :name
     column :description
     column :category
-    column :calories_from_fat
     column :food_group
+    column :brand
     column :barcode
     column :barcode_type
-    column :brand
     column :calories
+    column :calories_from_fat
     column :total_fat
     column :saturated_fat
     column :trans_fat
-    column :polyunsaturated_fat
-    column :omega_6
-    column :omega_3
-    column :protein
-    column :monounsaturated_fat
-    column :cholesterol
-    column :sodium
-    column :potassium
     column :total_carbohydrates
     column :dietary_fiber
     column :sugars
+    column :protein
+    column :sodium
+    column :potassium
+    column :caffeine
     column :vitamin_a
     column :vitamin_b12
     column :vitamin_c
     column :calcium
     column :iron
-    column :caffeine
+    column :monounsaturated_fat
+    column :polyunsaturated_fat
+    column :cholesterol
+    column :omega_3
+    column :omega_6
     column :serving_size
-    column :serving_size_type
     column :serving_string
+    column :serving_size_type
     column :location
-    column :total_carbohydrates
-    column :updated_at
-    column :created_at
     column :user_ip
     column :user_email
+    column :created_at
+    column :updated_at
+    column :is_edited
+    column :is_mergeable
     actions
   end
+
+  show do |ad|
+      attributes_table do
+        row :name
+        row :description
+        row :category
+        row :food_group
+        row :brand
+        row :barcode
+        row :barcode_type
+        row :calories
+        row :calories_from_fat
+        row :total_fat
+        row :saturated_fat
+        row :trans_fat
+        row :total_carbohydrates
+        row :dietary_fiber
+        row :sugars
+        row :protein
+        row :sodium
+        row :potassium
+        row :caffeine
+        row :vitamin_a
+        row :vitamin_b12
+        row :vitamin_c
+        row :calcium
+        row :iron
+        row :monounsaturated_fat
+        row :polyunsaturated_fat
+        row :cholesterol
+        row :omega_3
+        row :omega_6
+        row :serving_size
+        row :serving_string
+        row :serving_size_type
+        row :location
+        row :user_ip
+        row :user_email
+        row :created_at
+        row :updated_at
+        row :is_edited
+        row :is_mergeable
+      end
+    end
+
+    form do |f|
+      f.inputs do
+        f.input :name
+        f.input :description
+        f.input :category
+        f.input :food_group
+        f.input :brand
+        f.input :barcode
+        f.input :barcode_type
+        f.input :calories
+        f.input :calories_from_fat
+        f.input :total_fat
+        f.input :saturated_fat
+        f.input :trans_fat
+        f.input :total_carbohydrates
+        f.input :dietary_fiber
+        f.input :sugars
+        f.input :protein
+        f.input :sodium
+        f.input :potassium
+        f.input :caffeine
+        f.input :vitamin_a, label: 'Vitamin A' 
+        f.input :vitamin_b12, label: 'Vitamin B12' 
+        f.input :vitamin_c, label: 'Vitamin C' 
+        f.input :calcium
+        f.input :iron
+        f.input :monounsaturated_fat
+        f.input :polyunsaturated_fat
+        f.input :cholesterol
+        f.input :omega_3
+        f.input :omega_6
+        f.input :serving_size
+        f.input :serving_string
+        f.input :serving_size_type
+        f.input :location
+        f.input :user_ip
+        f.input :user_email
+        f.input :is_edited
+      end
+      f.actions
+    end
+
+    csv do
+      column :id
+      column :name
+      column :description
+      column :category
+      column :food_group
+      column :brand
+      column :barcode
+      column :barcode_type
+      column :calories
+      column :calories_from_fat
+      column :total_fat
+      column :saturated_fat
+      column :trans_fat
+      column :total_carbohydrates
+      column :dietary_fiber
+      column :sugars
+      column :protein
+      column :sodium
+      column :potassium
+      column :caffeine
+      column :vitamin_a
+      column :vitamin_b12
+      column :vitamin_c
+      column :calcium
+      column :iron
+      column :monounsaturated_fat
+      column :polyunsaturated_fat
+      column :cholesterol
+      column :omega_3
+      column :omega_6
+      column :serving_size
+      column :serving_string
+      column :serving_size_type
+      column :location
+      column :user_ip
+      column :user_email
+      column :created_at
+      column :updated_at
+      column :is_edited
+      column :is_mergeable
+    end
 
   filter :is_edited
   filter :name
