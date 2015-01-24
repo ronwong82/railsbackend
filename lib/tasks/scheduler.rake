@@ -47,7 +47,7 @@ namespace :foods do
       frequencies.each do |ip, times|
         next if times <= 1
         foods_of_duplicate_ip = grouped_foods.select{|f| f.user_ip == ip }
-        foods_to_remove << foods_of_duplicate_ip.reject {|f| f == grouped_foods.select{|f| f.created_at.present?}.max_by(&:created_at) }
+        foods_to_remove << foods_of_duplicate_ip.reject {|f| f == grouped_foods.max_by(&:filled_columns) }
         # foods_to_remove.each {|f| foods.delete(f) }
       end
     end
